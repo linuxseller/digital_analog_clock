@@ -146,7 +146,7 @@ void updateClock(void)
 }
 
 int main(void){
- 	DDRB = (1<<DDB5);
+    DDRB = (1<<DDB5);
     DDRB &= ~(1<<PINB4);
     DDRB &= ~(1<<PINB2);
     PORTB |= (1<<PINB4) | (1<<PINB2);
