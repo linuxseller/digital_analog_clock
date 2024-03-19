@@ -9,8 +9,6 @@ void inline ws2812_sendarray(uint8_t *data,uint16_t datlen)
   uint8_t sreg_prev;
   uint8_t *port = (uint8_t*) _SFR_MEM_ADDR(PORTB);
 
-  DDRB |= (1<<PB5); // Enable output
-
   masklo  = ~(1<<PB5)&PORTB;
   uint8_t maskhi = (1<<PB5);
   maskhi |= PORTB;

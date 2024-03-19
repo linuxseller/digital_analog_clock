@@ -3,9 +3,9 @@
 #include <avr/io.h>
 #include "libs/light_ws2812.h"
 #include <stdint.h>
+#include <avr/cpufunc.h>
 
 #include "libs/millis.h"
-
 #define ABS(a) (a>0)?a:(-(a))
 #define WIDTH 16
 #define HEIGHT 16
@@ -119,7 +119,7 @@ void plotArrow(int8_t x1, int8_t y1, int8_t c)
     plotLine(CENTER,CENTER,x1,y1, c);
 }
 
-void updateClock(void)
+void updateScreen(void)
 {
     my_memset(display, 0, 16*16*sizeof(*display));
     for(int8_t x=0; x<16; x++){
@@ -132,21 +132,57 @@ void updateClock(void)
             }
         }
     }
+    plotArrow(lookup[minutes/5][0], lookup[minutes/5][1], 3);
+    plotArrow(lookup_h[hours][0], lookup_h[hours][1], 2);
+}
+
+void updateClock(void)
+{
     minutes += 5;
     hours   += minutes==60;
     hours   %= 12;
     minutes %= 60;
-    plotArrow(lookup[minutes/5][0], lookup[minutes/5][1], 3);
-    plotArrow(lookup_h[hours][0], lookup_h[hours][1], 2);
+    updateScreen();
 }
+
 int main(void){
- 	DDRB = (1<<PB5);
+ 	DDRB = (1<<DDB5);
+    DDRB &= ~(1<<PINB4);
+    DDRB &= ~(1<<PINB2);
+    PORTB |= (1<<PINB4) | (1<<PINB2);
     init_millis();
+    _NOP();
     unsigned long prev=0;
+    unsigned long hours_btn_timer=0;
+    unsigned long minutes_btn_timer=0;
     updateClock();
     drawClock();
 	while(1){
-        if(millis()-prev>1){
+        _NOP();
+        unsigned long int millis_now = millis();
+        uint8_t pinb = PINB;
+        if(!((pinb>>PINB4)&1)){
+            if(millis_now-hours_btn_timer>5000){
+                hours_btn_timer = millis_now;
+                hours++;
+                hours%=12;
+                updateScreen();
+                drawClock();
+            }
+            continue;
+        }
+        if(!((pinb>>PINB2)&1)){
+            if(millis_now-minutes_btn_timer>5000){
+                minutes_btn_timer = millis_now;
+                minutes+=5;
+                minutes%=60;
+                updateScreen();
+                drawClock();
+            }
+            continue;
+        }
+#define CLOCK_UPDATE_MS 5*60*1000*10
+        if(millis_now-prev>(long unsigned int)CLOCK_UPDATE_MS){
             prev=millis();
             updateClock();
             drawClock();
