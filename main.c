@@ -14,7 +14,7 @@
 #define COL 0x10
 #define CENTER 8
 #define RADIUS 7
-#define CLOCK_UPDATE_MS 1*1000 // every 1 second
+#define CLOCK_UPDATE_MS 1*60*1000 // every 1 second
 #define UPDATE_ACCORDING_TO_MOD() { \
     switch(cur_mode) { \
         case DIGITAL_CLOCK: \
@@ -180,12 +180,9 @@ int main(void){
     /* return 0; */
 	while(1){
         _NOP();
-        /* uint8_t pinb = PINB; */
-        uint8_t pinb =0xff;
+        uint8_t pinb = PINB;
+        /* uint8_t pinb =0xff; */
         if(!((pinb>>PINB3)&1)){
-            minutes=0;
-            hours=0;
-            continue;
             if(millis()-modes_change_btn_timer>250*8){
                 modes_change_btn_timer = millis();
                 cur_mode += 1;
