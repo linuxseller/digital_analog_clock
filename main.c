@@ -183,7 +183,7 @@ int main(void){
         uint8_t pinb = PINB;
         /* uint8_t pinb =0xff; */
         if(!((pinb>>PINB3)&1)){
-            if(millis()-modes_change_btn_timer>250*8){
+            if(millis()-modes_change_btn_timer>250){
                 modes_change_btn_timer = millis();
                 cur_mode += 1;
                 cur_mode %= MODES_COUNT;
@@ -192,7 +192,7 @@ int main(void){
             }
         }
         if(!((pinb>>PINB4)&1)){
-            if(millis()-hours_btn_timer>250*8){
+            if(millis()-hours_btn_timer>250){
                 hours_btn_timer = millis();
                 hours++;
                 hours%=12;
@@ -203,7 +203,7 @@ int main(void){
             continue;
         }
         if(!((pinb>>PINB2)&1)){
-            if(millis()-minutes_btn_timer>250*8){
+            if(millis()-minutes_btn_timer>250){
                 minutes_btn_timer = millis();
                 if(cur_mode==ANALOG_CLOCK){
                     minutes+=5;
